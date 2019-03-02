@@ -72,3 +72,5 @@ tmap_save(p0, "figs/01-map.png")
 tmap_save(p1, "figs/02-p1-map.png")
 tmap_save(p2, "figs/03-p2-map.png")
 tmap_save(p3, "figs/04-p3-map.png")
+
+system("mogrify -trim figs/*.png")
