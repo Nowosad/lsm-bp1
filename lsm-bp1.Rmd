@@ -178,5 +178,9 @@ two_sizes_output
 
 # Summary
 
-You can read more about this function in [its help file](https://r-spatialecology.github.io/landscapemetrics/reference/sample_lsm.html) and about the structure of the output on [the package website](https://r-spatialecology.github.io/landscapemetrics/index.html).
-https://r-spatialecology.github.io/landscapemetrics/
+This post gave a few examples of how to calculate selected landscape metrics for buffers around sampling points using the **landscapemetrics** package and its function `sample_lsm()`.
+In the same time, the **landscapemetrics** package has many more to offer, including [a lot of implemented landscape metrics](https://r-spatialecology.github.io/landscapemetrics/reference/index.html), a number of utility functions (e.g. `extract_lsm()` or `get_patches()`), and several C++ functions design for the development of new metrics. 
+
+The **landscapemetrics** is also an open-source collaborative project. 
+It enables [community contributions](https://r-spatialecology.github.io/landscapemetrics/CONTRIBUTING.html), including documentation improvements, bug reports, and ideas to add new metrics and functions. 
+To learn more you can visit the package website at https://r-spatialecology.github.io/landscapemetrics/.
