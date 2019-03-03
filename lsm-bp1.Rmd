@@ -1,16 +1,15 @@
 ---
-title: 'Efficient landscape metrics calculations for buffers around sampling points'
+title: "Efficient landscape metrics calculations for buffers around sampling points"
 date: '2019-03-23'
-slug: landscapemetrics-bp
-categories: []
-tags:
-  - spatial
-  - geocompr
-  - sil
-  - rstats
-  - landscape-ecology
 draft: yes
-output: md_document
+slug: landscapemetrics-bp
+tags:
+- spatial
+- geocompr
+- sil
+- rstats
+- landscape-ecology
+categories: []
 ---
 
 Landscape metrics are algorithms that quantify physical characteristics of landscape mosaics (aka categorical raster) in order to connect them to some ecological processes.
@@ -38,10 +37,10 @@ Reprojection of raster objects is possible with an R package called **gdalUtils*
 ```{r, eval=FALSE}
 library(gdalUtils) 
 dir.create("data")
-# download land cover data
+# downloading the land cover data
 download.file("https://github.com/Nowosad/lsm-bp1/raw/master/data/cci_lc_australia.zip",
               destfile = "data/cci_lc_australia.zip")
-# unzip the file
+# unziping the file
 unzip("data/cci_lc_australia.zip", "data/cci_lc_australia.tif")
 # reprojecting the raster data to a local projected coordinate reference system
 # read more at http://spatialreference.org/ref/epsg/gda94-australian-albers/
@@ -59,9 +58,10 @@ Reading and reprojecting vector (points) objects can be done with the **sf** pac
 
 ```{r, eval=FALSE}
 library(sf)
-# download points
+# downloading the points
 download.file("https://raw.githubusercontent.com/Nowosad/lsm-bp1/master/data/sample_points.csv",
               destfile = "data/sample_points.csv")
+
 # reading the point data and reprojecting it
 points = read.csv("data/sample_points.csv") %>% 
   st_as_sf(coords = c("longitude", "latitude")) %>% 
@@ -72,7 +72,11 @@ points = read.csv("data/sample_points.csv") %>%
 st_write(points, "data/sample_points.gpkg")
 ```
 
-# Simple calculations of landscape metrics
+```{r, echo=FALSE, fig.cap="Location of three sample points on a land cover map of Australia. Source of the input map: https://maps.elie.ucl.ac.be/CCI/viewer/"}
+knitr::include_graphics("figs/01-map.png")
+```
+
+# Calculations of landscape metrics in a buffer
 
 Now, we can read the new files - the new raster with the `raster()` function and the new points file with the `st_read()` function:
 
@@ -82,34 +86,41 @@ library(raster)
 library(sf)
 library(purrr)
 library(landscapemetrics)
+
 # reading the raster and vector datasets
 lc = raster("data/cci_lc_australia_aea.tif")
-sample_points = st_read("data/sample_points.gpkg")
+sample_points = st_read("data/sample_points.gpkg", quiet = TRUE)
 ```
 
 The **landscapemetrics** package has a function designed for calculations of landscape metrics for a given buffer.
-It is called `sample_lsm()` and it expects, at least three inputs - a raster, a vector (points), and a buffer size.
-As a default, it calculates all of the available metrics in a square buffer:
+It is called `sample_lsm()` and it expects, at least three input arguments - a raster, a vector (points), and a buffer size.
+As a default, it calculates all of the available metrics in a square buffer, where a buffer size is the side-length in map units (e.g. meters).
 
 ```{r, warning=FALSE}
 square_all = sample_lsm(lc,
                         points = sample_points,
                         size = 3000)
+square_all
 ```
 
-<!-- explain the output -->
-<!--adds info about warnings-->
-This function also allows for calculating a selected level (`"landscape"`, `"class"`, or `"patch"`):
+The output, `square_all`, is a data frame containing values of all of the landscape metrics available in the **landscapemetrics** package.
+The structure of the output is stable and contains following columns:
 
-```{r, warning=FALSE}
-square_landscape = sample_lsm(lc,
-                              points = sample_points,
-                              size = 3000,
-                              level = "landscape")
-square_landscape
+1. `layer` - an id of the input raster (landscape). It is possible to calculate landscape metrics on a several rasters at the same time.
+2. `level` - a landscape metrics level ("landscape", "class", or "patch").
+3. `class` - a number of a class for class and patch level metrics.
+4. `id` - a number of a patch for patch level metrics.
+5. `metric` - a metric name.
+6. `value` - an output value of the metric.
+7. `plot_id` - an id of the input vector (point).
+8. `percentage_inside` - a size of the actual sampled landscape in %. It is not always 100% due to two reasons: (i) clipping raster cells using a buffer not directly intersecting a raster cell center lead to inaccuracies and (ii) sample plots can exceed the landscape boundary.
+
+```{r, echo=FALSE, out.width='30%', fig.cap="Square buffers with the side-length of 3000 meters around the three sample points."}
+knitr::include_graphics(c("figs/02-p1-map.png", "figs/03-p2-map.png", "figs/04-p3-map.png"))
 ```
 
-... or just a single metric, for example SHDI (Shannon's diversity index) on a landscape level (`"lsm_l_shdi"`):
+The `sample_lsm()` function also allows for selecting metrics using a level name (`"landscape"`, `"class"`, or `"patch"`), a metric abbriviation, full name of a metric, or a metric type. 
+For example SHDI (Shannon's diversity index) on a landscape level (`"lsm_l_shdi"`) can be calculated using the code below.
 
 ```{r, warning=FALSE}
 square_shdi = sample_lsm(lc,
@@ -119,18 +130,34 @@ square_shdi = sample_lsm(lc,
 square_shdi
 ```
 
-<!-- more options to specify options -->
-As a default, it uses a square buffer, but it could be changed to a circle one with the `shape` argument set to `"circle"`.
+The result shows that the area around the second sample point is the most diverse (SHDI value of 1.49), and the area around the third sample point is the least diverse (SHDI value of 0.665).
+
+As default, `sample_lsm()` uses a square buffer, but it could be changed to a circle one with the `shape` argument set to `"circle"`.
+In this case, the size argument represents the radius in map units.
+
+```{r, warning=FALSE}
+circle_shdi = sample_lsm(lc,
+                         points = sample_points,
+                         size = 3000,
+                         what = "lsm_l_shdi",
+                         shape = "circle") 
+circle_shdi
+```
+
+```{r, echo=FALSE, out.width='30%', fig.cap="Circle buffers with the radius of 3000 meters around the three sample points."}
+knitr::include_graphics(c("figs/02-p1-map3.png", "figs/03-p2-map3.png", "figs/04-p3-map3.png"))
+```
 
 # Calculations of landscape metrics for many buffers
 
-Finally, it is also possible to calculate landscape metrics on different buffer sizes.
-You need to select what sizes you are interested in, and next use the `sample_lsm()` function inside a `map_dfr()` function.
+Finally, it is also possible to calculate landscape metrics on many different buffer sizes at the same time.
+You just need to select what sizes you are interested in, and use the `sample_lsm()` function inside a `map_dfr()` function.
 
 ```{r, warning=FALSE}
-# create buffers of 2000 and 4000 meters 
-sizes = c(2000, 4000)
-# calculate shdi (landscape metric) for each buffer
+# creating buffers of 3000 and 6000 meters 
+sizes = c(3000, 6000)
+
+# calculating shdi (landscape metric) for each buffer
 two_sizes_output = sizes %>% 
   set_names() %>% 
   map_dfr(~sample_lsm(lc, points = sample_points, what = "lsm_l_shdi", size = .), 
@@ -138,7 +165,12 @@ two_sizes_output = sizes %>%
 ```
 
 It calculates all of the selected metrics for all of the buffers.
-The result is a data frame, where the first column describes the buffer size, and the rest is a strandard **landscapemetrics** output.
+
+```{r, echo=FALSE, out.width='30%', fig.cap="Square buffers with the side-length of 3000 and 6000 meters around the three sample points."}
+knitr::include_graphics(c("figs/02-p1-map2.png", "figs/03-p2-map2.png", "figs/04-p3-map2.png"))
+```
+
+The result is a data frame, where the first column describes the buffer size, and the rest is a standard **landscapemetrics** output.
 
 ```{r}
 two_sizes_output
@@ -147,6 +179,4 @@ two_sizes_output
 # Summary
 
 You can read more about this function in [its help file](https://r-spatialecology.github.io/landscapemetrics/reference/sample_lsm.html) and about the structure of the output on [the package website](https://r-spatialecology.github.io/landscapemetrics/index.html).
-
-
 https://r-spatialecology.github.io/landscapemetrics/
