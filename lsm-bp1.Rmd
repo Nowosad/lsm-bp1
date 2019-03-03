@@ -14,14 +14,14 @@ categories: []
 
 Landscape metrics are algorithms that quantify physical characteristics of landscape mosaics (aka categorical raster) in order to connect them to some ecological processes.
 Many different landscape metrics exist and they can provide three main levels of information: (i) landscape level, (ii) class level, and (iii) patch level.
-A landscape level metric gives just one value describing cetrain property of a landscape mosaic, such as its diversity. 
+A landscape level metric gives just one value describing a certain property of a landscape mosaic, such as its diversity. 
 A class level metric returns one value for each class (category) present in a landscape.
 A patch level metric separates neighboring cells belonging to the same class, and calculates a value for each patch.^[For a more detailed explanation see https://r-spatialecology.github.io/landscapemetrics/articles/articles/general-background.html.]
 
 Landscape metrics are often applied to better understand a landscape structure around some sampling points.
 <!-- For example, ... .  -->
-In this post, I show how to prepare input data and how to calculate selected landscape metrics based on a different buffer size and shape.
-All calculations were performed in R, using **gdalUtils**, **sf**, and **raster** packages for spatial data handling, **purrr** to ease some calculations, and most importantly the **landscapemetrics** packge was used to calculate landscape metrics.
+In this post, I show how to prepare input data and how to calculate selected landscape metrics based on different buffer size and shape.
+All calculations were performed in R, using **gdalUtils**, **sf**, and **raster** packages for spatial data handling, **purrr** to ease some calculations, and most importantly the **landscapemetrics** package was used to calculate landscape metrics.
 
 # Data preparation
 
@@ -94,7 +94,7 @@ sample_points = st_read("data/sample_points.gpkg", quiet = TRUE)
 
 The **landscapemetrics** package has a function designed for calculations of landscape metrics for a given buffer.
 It is called `sample_lsm()` and it expects, at least three input arguments - a raster, a vector (points), and a buffer size.
-As a default, it calculates all of the available metrics in a square buffer, where a buffer size is the side-length in map units (e.g. meters).
+As a default, it calculates all of the available metrics in a square buffer, where buffer size is the side-length in map units (e.g. meters).
 
 ```{r, warning=FALSE}
 square_all = sample_lsm(lc,
@@ -104,23 +104,23 @@ square_all
 ```
 
 The output, `square_all`, is a data frame containing values of all of the landscape metrics available in the **landscapemetrics** package.
-The structure of the output is stable and contains following columns:
+The structure of the output is stable and contains the following columns:
 
-1. `layer` - an id of the input raster (landscape). It is possible to calculate landscape metrics on a several rasters at the same time.
+1. `layer` - id of the input raster (landscape). It is possible to calculate landscape metrics on several rasters at the same time.
 2. `level` - a landscape metrics level ("landscape", "class", or "patch").
 3. `class` - a number of a class for class and patch level metrics.
 4. `id` - a number of a patch for patch level metrics.
 5. `metric` - a metric name.
 6. `value` - an output value of the metric.
-7. `plot_id` - an id of the input vector (point).
-8. `percentage_inside` - a size of the actual sampled landscape in %. It is not always 100% due to two reasons: (i) clipping raster cells using a buffer not directly intersecting a raster cell center lead to inaccuracies and (ii) sample plots can exceed the landscape boundary.
+7. `plot_id` - id of the input vector (point).
+8. `percentage_inside` - the size of the actual sampled landscape in %. It is not always 100% due to two reasons: (i) clipping raster cells using a buffer not directly intersecting a raster cell center lead to inaccuracies and (ii) sample plots can exceed the landscape boundary.
 
 ```{r, echo=FALSE, out.width='30%', fig.cap="Square buffers with the side-length of 3000 meters around the three sample points."}
 knitr::include_graphics(c("figs/02-p1-map.png", "figs/03-p2-map.png", "figs/04-p3-map.png"))
 ```
 
-The `sample_lsm()` function also allows for selecting metrics using a level name (`"landscape"`, `"class"`, or `"patch"`), a metric abbriviation, full name of a metric, or a metric type. 
-For example SHDI (Shannon's diversity index) on a landscape level (`"lsm_l_shdi"`) can be calculated using the code below.
+The `sample_lsm()` function also allows for selecting metrics using a level name (`"landscape"`, `"class"`, or `"patch"`), a metric abbreviation, full name of a metric, or a metric type. 
+For example, SHDI (Shannon's diversity index) on a landscape level (`"lsm_l_shdi"`) can be calculated using the code below.
 
 ```{r, warning=FALSE}
 square_shdi = sample_lsm(lc,
@@ -132,7 +132,7 @@ square_shdi
 
 The result shows that the area around the second sample point is the most diverse (SHDI value of 1.49), and the area around the third sample point is the least diverse (SHDI value of 0.665).
 
-As default, `sample_lsm()` uses a square buffer, but it could be changed to a circle one with the `shape` argument set to `"circle"`.
+As the default, `sample_lsm()` uses a square buffer, but it could be changed to a circle one with the `shape` argument set to `"circle"`.
 In this case, the size argument represents the radius in map units.
 
 ```{r, warning=FALSE}
@@ -151,7 +151,7 @@ knitr::include_graphics(c("figs/02-p1-map3.png", "figs/03-p2-map3.png", "figs/04
 # Calculations of landscape metrics for many buffers
 
 Finally, it is also possible to calculate landscape metrics on many different buffer sizes at the same time.
-You just need to select what sizes you are interested in, and use the `sample_lsm()` function inside a `map_dfr()` function.
+You just need to select what sizes you are interested in and use the `sample_lsm()` function inside a `map_dfr()` function.
 
 ```{r, warning=FALSE}
 # creating buffers of 3000 and 6000 meters 
