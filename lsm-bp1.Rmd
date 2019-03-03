@@ -1,0 +1,131 @@
+---
+title: 'landscapemetrics'
+author: Jakub Nowosad
+date: '2019-03-23'
+slug: landscapemetrics-bp
+categories: []
+tags:
+  - spatial
+  - geocompr
+  - sil
+  - rstats
+  - landscape-ecology
+draft: yes
+---
+
+# Data preparation
+
+Every software for calculations of landscape metrics, such as FRAGSTATS or **landscapemetrics** expects the input data to be in a projected coordinate reference system instead of a geographic coordinate reference system. 
+This is due to a fact that geographic coordinate reference systems are expressed in degrees, and one degree on the equator has a different length in meters than one degree on a middle latitude.
+Projected coordinate reference systems, on the other hand, have a linear unit of measurement such as meters.
+This allows for proper calculations of distances or areas.
+
+In this case, the input data (`studyarea.tif` and `jb.csv`) is in a geographic coordinate reference system called WGS84.
+Therefore, it is important to reproject the data before calculating any landscape metrics.
+Reprojection of raster objects is possible with an R package called **gdalUtils**:
+
+```{r, eval=FALSE}
+library(gdalUtils) 
+library(sf)
+# unzip the file
+unzip("data/cci_lc_australia.zip", "data/cci_lc_australia.tif")
+# reprojecting the raster data to a local projected coordinate reference system
+# read more at http://spatialreference.org/ref/sr-org/7564/
+gdalwarp(srcfile = "data/cci_lc_australia.tif",
+         dstfile = "data/cci_lc_australia_aea.vrt",
+         of = "VRT",
+         t_srs = "+proj=aea +lat_1=-18 +lat_2=-36 +lat_0=0 +lon_0=132 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs")
+# compressing the output file
+gdal_translate(src_dataset = "data/cci_lc_australia_aea.vrt",
+               dst_dataset = "data/cci_lc_australia_aea.tif",
+               co = "COMPRESS=LZW")
+```
+
+Reading and reprojecting vector (points) objects could be done with the **sf** package:
+
+```{r, eval=FALSE}
+# reading the vector data and reprojecting it
+points = read.csv("data/sample_points.csv") %>% 
+  st_as_sf(coords = c("longitude", "latitude")) %>% 
+  st_set_crs(4326) %>% 
+  st_transform("+proj=aea +lat_1=-18 +lat_2=-36 +lat_0=0 +lon_0=132 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs ")
+
+# saving the new object to a spatial data format GPKG
+st_write(points, "data/sample_points.gpkg")
+```
+
+# Simple calculations of landscape metrics
+
+Now, we can read the new files - the new raster with the `raster()` function and the new points file with the `st_read()` function:
+
+```{r, message=FALSE}
+# attaching the packages used in the next examples
+library(raster)
+library(sf)
+library(landscapemetrics)
+library(purrr)
+# reading the raster and vector datasets
+r = raster("data/cci_lc_australia_aea.tif")
+points = st_read("data/sample_points.gpkg")
+```
+
+The **landscapemetrics** package has a function designed for calculations of landscape metrics for a given buffer.
+It is called `sample_lsm()` and it expects, at least three inputs - a raster, a vector (points), and a buffer size.
+As a default, it calculates all of the available metrics:
+
+```{r, warning=FALSE}
+square_all  = sample_lsm(lc, 
+                         points = sample_points,
+                         size = 30000)
+```
+
+<!--adds info about warnings-->
+This function also allows for calculating a selected level (`"landscape"`, `"class"`, or `"patch"`):
+
+```{r, warning=FALSE}
+square_landscape = sample_lsm(lc,
+                                   points = sample_points,
+                                   size = 30000,
+                                   evel = "landscape")
+square_landscape
+```
+
+... or just a single metric, for example SHDI on a landscape level (`"lsm_l_shdi"`):
+
+```{r, warning=FALSE}
+square_shdi = sample_lsm(lc,
+                                   points = sample_points,
+                                   size = 30000,
+                              what = "lsm_l_shdi") 
+square_shdi
+```
+
+As a default, it uses a square buffer, but it could be changed to a circle one.
+
+You can read more about this function in [its help file](https://r-spatialecology.github.io/landscapemetrics/reference/sample_lsm.html) and about the structure of the output on [the package website](https://r-spatialecology.github.io/landscapemetrics/index.html).
+
+# Calculations of landscape metrics for many buffers
+
+Finally, it is also possible to calculate landscapemetrics on different buffer sizes.
+You need to select what sizes you are interested in, and next use the `sample_lsm()` function inside a `map()` function.
+
+```{r, warning=FALSE}
+# create buffers of 1000 and 2000 meters 
+sizes = c(1000, 2000)
+# calculate landscape metrics for each buffer
+two_sizes_output = sizes %>% 
+  map(~sample_lsm(lc, points = sample_points size = .))
+```
+
+It calculates all of the selected metrics for all of the buffers.
+The result is a list, where each element of the output list describes each buffer.
+
+```{r}
+# select the result for the first buffer
+two_sizes_output[[1]]
+# select the result for the second buffer
+two_sizes_output[[2]]
+```
+
+# Summary
+
