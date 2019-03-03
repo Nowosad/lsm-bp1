@@ -75,7 +75,7 @@ sample_points = st_read("data/sample_points.gpkg")
 
 The **landscapemetrics** package has a function designed for calculations of landscape metrics for a given buffer.
 It is called `sample_lsm()` and it expects, at least three inputs - a raster, a vector (points), and a buffer size.
-As a default, it calculates all of the available metrics:
+As a default, it calculates all of the available metrics in a square buffer:
 
 ```{r, warning=FALSE}
 square_all = sample_lsm(lc,
@@ -94,7 +94,7 @@ square_landscape = sample_lsm(lc,
 square_landscape
 ```
 
-... or just a single metric, for example SHDI on a landscape level (`"lsm_l_shdi"`):
+... or just a single metric, for example SHDI (Shannon's diversity index) on a landscape level (`"lsm_l_shdi"`):
 
 ```{r, warning=FALSE}
 square_shdi = sample_lsm(lc,
@@ -104,14 +104,12 @@ square_shdi = sample_lsm(lc,
 square_shdi
 ```
 
-As a default, it uses a square buffer, but it could be changed to a circle one.
-
-You can read more about this function in [its help file](https://r-spatialecology.github.io/landscapemetrics/reference/sample_lsm.html) and about the structure of the output on [the package website](https://r-spatialecology.github.io/landscapemetrics/index.html).
+As a default, it uses a square buffer, but it could be changed to a circle one with the `shape` argument set to `"circle"`.
 
 # Calculations of landscape metrics for many buffers
 
-Finally, it is also possible to calculate landscapemetrics on different buffer sizes.
-You need to select what sizes you are interested in, and next use the `sample_lsm()` function inside a `map()` function.
+Finally, it is also possible to calculate landscape metrics on different buffer sizes.
+You need to select what sizes you are interested in, and next use the `sample_lsm()` function inside a `map_dfr()` function.
 
 ```{r, warning=FALSE}
 # create buffers of 2000 and 4000 meters 
@@ -124,7 +122,7 @@ two_sizes_output = sizes %>%
 ```
 
 It calculates all of the selected metrics for all of the buffers.
-The result is a list, where each element of the output list describes each buffer.
+The result is a data frame, where the first column describes the buffer size, and the rest is a strandard **landscapemetrics** output.
 
 ```{r}
 two_sizes_output
@@ -132,3 +130,4 @@ two_sizes_output
 
 # Summary
 
+You can read more about this function in [its help file](https://r-spatialecology.github.io/landscapemetrics/reference/sample_lsm.html) and about the structure of the output on [the package website](https://r-spatialecology.github.io/landscapemetrics/index.html).
