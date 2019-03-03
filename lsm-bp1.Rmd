@@ -14,17 +14,15 @@ output: md_document
 ---
 
 Landscape metrics are algorithms that quantify physical characteristics of landscape mosaics (aka categorical raster) in order to connect them to some ecological processes.
-Many different landscape metrics exist and they are broadly interested in three main levels of information: (i) landscape, (ii) class, and (iii) patch level.
-Selected landscape level metric gives just one value describing cetrain property of a landscape mosaic, such as its diversity. 
+Many different landscape metrics exist and they can provide three main levels of information: (i) landscape level, (ii) class level, and (iii) patch level.
+A landscape level metric gives just one value describing cetrain property of a landscape mosaic, such as its diversity. 
 A class level metric returns one value for each class (category) present in a landscape.
 A patch level metric separates neighboring cells belonging to the same class, and calculates a value for each patch.^[For a more detailed explanation see https://r-spatialecology.github.io/landscapemetrics/articles/articles/general-background.html.]
 
 Landscape metrics are often applied to better understand a landscape structure around some sampling points.
-For example, ... . 
-https://r-spatialecology.github.io/landscapemetrics/
-
-This post, I show how to prepare input data and how to calculate selected landscape metrics based on a different buffer size and shape.
-<!-- link to the datasets -->
+<!-- For example, ... .  -->
+In this post, I show how to prepare input data and how to calculate selected landscape metrics based on a different buffer size and shape.
+All calculations were performed in R, using **gdalUtils**, **sf**, and **raster** packages for spatial data handling, **purrr** to ease some calculations, and most importantly the **landscapemetrics** packge was used to calculate landscape metrics.
 
 # Data preparation
 
@@ -39,7 +37,10 @@ Reprojection of raster objects is possible with an R package called **gdalUtils*
 
 ```{r, eval=FALSE}
 library(gdalUtils) 
-library(sf)
+dir.create("data")
+# download land cover data
+download.file("https://github.com/Nowosad/lsm-bp1/raw/master/data/cci_lc_australia.zip",
+              destfile = "data/cci_lc_australia.zip")
 # unzip the file
 unzip("data/cci_lc_australia.zip", "data/cci_lc_australia.tif")
 # reprojecting the raster data to a local projected coordinate reference system
@@ -57,6 +58,10 @@ gdal_translate(src_dataset = "data/cci_lc_australia_aea.vrt",
 Reading and reprojecting vector (points) objects can be done with the **sf** package:
 
 ```{r, eval=FALSE}
+library(sf)
+# download points
+download.file("https://raw.githubusercontent.com/Nowosad/lsm-bp1/master/data/sample_points.csv",
+              destfile = "data/sample_points.csv")
 # reading the point data and reprojecting it
 points = read.csv("data/sample_points.csv") %>% 
   st_as_sf(coords = c("longitude", "latitude")) %>% 
@@ -75,8 +80,8 @@ Now, we can read the new files - the new raster with the `raster()` function and
 # attaching the packages used in the next examples
 library(raster)
 library(sf)
-library(landscapemetrics)
 library(purrr)
+library(landscapemetrics)
 # reading the raster and vector datasets
 lc = raster("data/cci_lc_australia_aea.tif")
 sample_points = st_read("data/sample_points.gpkg")
@@ -142,3 +147,6 @@ two_sizes_output
 # Summary
 
 You can read more about this function in [its help file](https://r-spatialecology.github.io/landscapemetrics/reference/sample_lsm.html) and about the structure of the output on [the package website](https://r-spatialecology.github.io/landscapemetrics/index.html).
+
+
+https://r-spatialecology.github.io/landscapemetrics/
