@@ -11,6 +11,7 @@ tags:
   - rstats
   - landscape-ecology
 draft: yes
+output: md_document
 ---
 
 # Data preparation
@@ -65,8 +66,8 @@ library(sf)
 library(landscapemetrics)
 library(purrr)
 # reading the raster and vector datasets
-r = raster("data/cci_lc_australia_aea.tif")
-points = st_read("data/sample_points.gpkg")
+lc = raster("data/cci_lc_australia_aea.tif")
+sample_points = st_read("data/sample_points.gpkg")
 ```
 
 The **landscapemetrics** package has a function designed for calculations of landscape metrics for a given buffer.
@@ -74,9 +75,9 @@ It is called `sample_lsm()` and it expects, at least three inputs - a raster, a 
 As a default, it calculates all of the available metrics:
 
 ```{r, warning=FALSE}
-square_all  = sample_lsm(lc, 
-                         points = sample_points,
-                         size = 30000)
+square_all = sample_lsm(lc,
+                        points = sample_points,
+                        size = 3000)
 ```
 
 <!--adds info about warnings-->
@@ -84,9 +85,9 @@ This function also allows for calculating a selected level (`"landscape"`, `"cla
 
 ```{r, warning=FALSE}
 square_landscape = sample_lsm(lc,
-                                   points = sample_points,
-                                   size = 30000,
-                                   evel = "landscape")
+                              points = sample_points,
+                              size = 3000,
+                              level = "landscape")
 square_landscape
 ```
 
@@ -94,9 +95,9 @@ square_landscape
 
 ```{r, warning=FALSE}
 square_shdi = sample_lsm(lc,
-                                   points = sample_points,
-                                   size = 30000,
-                              what = "lsm_l_shdi") 
+                         points = sample_points,
+                         size = 3000,
+                         what = "lsm_l_shdi") 
 square_shdi
 ```
 
@@ -110,21 +111,19 @@ Finally, it is also possible to calculate landscapemetrics on different buffer s
 You need to select what sizes you are interested in, and next use the `sample_lsm()` function inside a `map()` function.
 
 ```{r, warning=FALSE}
-# create buffers of 1000 and 2000 meters 
-sizes = c(1000, 2000)
-# calculate landscape metrics for each buffer
+# create buffers of 2000 and 4000 meters 
+sizes = c(2000, 4000)
+# calculate shdi (landscape metric) for each buffer
 two_sizes_output = sizes %>% 
-  map(~sample_lsm(lc, points = sample_points size = .))
+  set_names() %>% 
+  map_dfr(~sample_lsm(lc, points = sample_points, what = "lsm_l_shdi", size = .), .id = "buffer")
 ```
 
 It calculates all of the selected metrics for all of the buffers.
 The result is a list, where each element of the output list describes each buffer.
 
 ```{r}
-# select the result for the first buffer
-two_sizes_output[[1]]
-# select the result for the second buffer
-two_sizes_output[[2]]
+two_sizes_output
 ```
 
 # Summary
