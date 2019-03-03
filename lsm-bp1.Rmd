@@ -23,8 +23,7 @@ Landscape metrics are often applied to better understand a landscape structure a
 For example, ... . 
 https://r-spatialecology.github.io/landscapemetrics/
 
-This post, I show how to prepare input data
-
+This post, I show how to prepare input data and how to calculate selected landscape metrics based on a different buffer size and shape.
 <!-- link to the datasets -->
 
 # Data preparation
