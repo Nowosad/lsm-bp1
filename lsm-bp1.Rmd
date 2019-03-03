@@ -1,5 +1,5 @@
 ---
-title: 'landscapemetrics'
+title: 'Efficient calculations of landscape metrics for buffers around sampling points'
 author: Jakub Nowosad
 date: '2019-03-23'
 slug: landscapemetrics-bp
@@ -14,14 +14,17 @@ draft: yes
 output: md_document
 ---
 
+<!-- intro -->
+<!-- link to the datasets -->
+
 # Data preparation
 
-Every software for calculations of landscape metrics, such as FRAGSTATS or **landscapemetrics** expects the input data to be in a projected coordinate reference system instead of a geographic coordinate reference system. 
+Every software for calculations of landscape metrics, such as FRAGSTATS or **landscapemetrics**, expects the input data in a projected coordinate reference system instead of a geographic coordinate reference system. 
 This is due to a fact that geographic coordinate reference systems are expressed in degrees, and one degree on the equator has a different length in meters than one degree on a middle latitude.
 Projected coordinate reference systems, on the other hand, have a linear unit of measurement such as meters.
-This allows for proper calculations of distances or areas.
+This allows for proper calculations of distances or areas.^[More information about coordinate reference systems can be found at https://geocompr.robinlovelace.net/spatial-class.html#crs-intro.]
 
-In this case, the input data (`studyarea.tif` and `jb.csv`) is in a geographic coordinate reference system called WGS84.
+In this case, the input datasets (`cci_lc_australia.tif` and `sample_points.csv`) are in a geographic coordinate reference system called WGS84.
 Therefore, it is important to reproject the data before calculating any landscape metrics.
 Reprojection of raster objects is possible with an R package called **gdalUtils**:
 
@@ -31,7 +34,7 @@ library(sf)
 # unzip the file
 unzip("data/cci_lc_australia.zip", "data/cci_lc_australia.tif")
 # reprojecting the raster data to a local projected coordinate reference system
-# read more at http://spatialreference.org/ref/sr-org/7564/
+# read more at http://spatialreference.org/ref/epsg/gda94-australian-albers/
 gdalwarp(srcfile = "data/cci_lc_australia.tif",
          dstfile = "data/cci_lc_australia_aea.vrt",
          of = "VRT",
@@ -42,10 +45,10 @@ gdal_translate(src_dataset = "data/cci_lc_australia_aea.vrt",
                co = "COMPRESS=LZW")
 ```
 
-Reading and reprojecting vector (points) objects could be done with the **sf** package:
+Reading and reprojecting vector (points) objects can be done with the **sf** package:
 
 ```{r, eval=FALSE}
-# reading the vector data and reprojecting it
+# reading the point data and reprojecting it
 points = read.csv("data/sample_points.csv") %>% 
   st_as_sf(coords = c("longitude", "latitude")) %>% 
   st_set_crs(4326) %>% 
@@ -116,7 +119,8 @@ sizes = c(2000, 4000)
 # calculate shdi (landscape metric) for each buffer
 two_sizes_output = sizes %>% 
   set_names() %>% 
-  map_dfr(~sample_lsm(lc, points = sample_points, what = "lsm_l_shdi", size = .), .id = "buffer")
+  map_dfr(~sample_lsm(lc, points = sample_points, what = "lsm_l_shdi", size = .), 
+          .id = "buffer")
 ```
 
 It calculates all of the selected metrics for all of the buffers.
