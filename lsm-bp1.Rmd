@@ -1,5 +1,5 @@
 ---
-title: 'Efficient calculations of landscape metrics for buffers around sampling points'
+title: 'Efficient landscape metrics calculations for buffers around sampling points'
 author: Jakub Nowosad
 date: '2019-03-23'
 slug: landscapemetrics-bp
