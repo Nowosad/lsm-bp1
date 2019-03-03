@@ -1,6 +1,5 @@
 ---
 title: 'Efficient landscape metrics calculations for buffers around sampling points'
-author: Jakub Nowosad
 date: '2019-03-23'
 slug: landscapemetrics-bp
 categories: []
@@ -14,7 +13,18 @@ draft: yes
 output: md_document
 ---
 
-<!-- intro -->
+Landscape metrics are algorithms that quantify physical characteristics of landscape mosaics (aka categorical raster) in order to connect them to some ecological processes.
+Many different landscape metrics exist and they are broadly interested in three main levels of information: (i) landscape, (ii) class, and (iii) patch level.
+Selected landscape level metric gives just one value describing cetrain property of a landscape mosaic, such as its diversity. 
+A class level metric returns one value for each class (category) present in a landscape.
+A patch level metric separates neighboring cells belonging to the same class, and calculates a value for each patch.^[For a more detailed explanation see https://r-spatialecology.github.io/landscapemetrics/articles/articles/general-background.html.]
+
+Landscape metrics are often applied to better understand a landscape structure around some sampling points.
+For example, ... . 
+https://r-spatialecology.github.io/landscapemetrics/
+
+This post, I show how to prepare input data
+
 <!-- link to the datasets -->
 
 # Data preparation
@@ -83,6 +93,7 @@ square_all = sample_lsm(lc,
                         size = 3000)
 ```
 
+<!-- explain the output -->
 <!--adds info about warnings-->
 This function also allows for calculating a selected level (`"landscape"`, `"class"`, or `"patch"`):
 
@@ -104,6 +115,7 @@ square_shdi = sample_lsm(lc,
 square_shdi
 ```
 
+<!-- more options to specify options -->
 As a default, it uses a square buffer, but it could be changed to a circle one with the `shape` argument set to `"circle"`.
 
 # Calculations of landscape metrics for many buffers
