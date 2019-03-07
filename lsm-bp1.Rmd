@@ -20,8 +20,8 @@ A patch level metric separates neighboring cells belonging to the same class, an
 
 Landscape metrics are often applied to better understand a landscape structure around some sampling points.
 <!-- For example, ... .  -->
-In this post, I show how to prepare input data and how to calculate selected landscape metrics based on different buffer size and shape.
-All calculations were performed in R, using **gdalUtils**, **sf**, and **raster** packages for spatial data handling, **purrr** to ease some calculations, and most importantly the **landscapemetrics** package was used to calculate landscape metrics.
+In this post, I show how to prepare input data and how to calculate selected landscape metrics based on different buffer sizes and shapes.
+All calculations were performed in R, using [https://cran.r-project.org/web/packages/gdalUtils/index.html](**gdalUtils**), [https://github.com/r-spatial/sf](**sf**), and [https://github.com/rspatial/raster](**raster**) packages for spatial data handling, [https://github.com/tidyverse/purrr](**purrr**) to ease some calculations, and most importantly the [https://github.com/r-spatialecology/landscapemetrics](**landscapemetrics**) package was used to calculate landscape metrics.
 
 # Data preparation
 
@@ -179,7 +179,7 @@ two_sizes_output
 # Summary
 
 This post gave a few examples of how to calculate selected landscape metrics for buffers around sampling points using the **landscapemetrics** package and its function `sample_lsm()`.
-In the same time, the **landscapemetrics** package has many more to offer, including [a lot of implemented landscape metrics](https://r-spatialecology.github.io/landscapemetrics/reference/index.html), a number of utility functions (e.g. `extract_lsm()` or `get_patches()`), and several C++ functions design for the development of new metrics. 
+In the same time, the **landscapemetrics** package has much more to offer, including [a lot of implemented landscape metrics](https://r-spatialecology.github.io/landscapemetrics/reference/index.html), a number of utility functions (e.g. `extract_lsm()` or `get_patches()`), and several C++ functions designed for the development of new metrics. 
 
 The **landscapemetrics** is also an open-source collaborative project. 
 It enables [community contributions](https://r-spatialecology.github.io/landscapemetrics/CONTRIBUTING.html), including documentation improvements, bug reports, and ideas to add new metrics and functions. 
