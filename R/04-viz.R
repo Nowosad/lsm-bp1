@@ -153,7 +153,7 @@ p3d = p3 +
 # tmap_arrange(p1, p2, p3, nrow = 1)
 
 dir.create("figs")
-tmap_save(p0, "figs/01-map.png")
+tmap_save(p0, "figs/01-map-all.png")
 tmap_save(p1b, "figs/02-p1-map.png", width = 3.15, height = 8.75)
 tmap_save(p2b, "figs/03-p2-map.png", width = 3.15, height = 8.75)
 tmap_save(p3b, "figs/04-p3-map.png", width = 3.15, height = 8.75)
@@ -167,3 +167,25 @@ tmap_save(p2d, "figs/03-p2-map3.png", width = 3.15, height = 8.75)
 tmap_save(p3d, "figs/04-p3-map3.png", width = 3.15, height = 8.75)
 
 system("mogrify -trim figs/*.png")
+
+# merge images
+library(magick)
+
+p1_names = dir("figs", pattern = "map.png", full.names = TRUE)
+p2_names = dir("figs", pattern = "map2.png", full.names = TRUE)
+p3_names = dir("figs", pattern = "map3.png", full.names = TRUE)
+
+p1_names %>% 
+  image_read() %>% 
+  image_append(stack = FALSE) %>% 
+  image_write("figs/p1.png")
+
+p2_names %>% 
+  image_read() %>% 
+  image_append(stack = FALSE) %>% 
+  image_write("figs/p2.png")
+
+p3_names %>% 
+  image_read() %>% 
+  image_append(stack = FALSE) %>% 
+  image_write("figs/p3.png")
