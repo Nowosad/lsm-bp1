@@ -10,6 +10,7 @@ tags:
 - rstats
 - landscape-ecology
 categories: []
+output: github_document
 ---
 
 Landscape metrics are algorithms that quantify physical characteristics of landscape mosaics (aka categorical raster) in order to connect them to some ecological processes.
