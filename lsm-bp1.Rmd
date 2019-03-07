@@ -21,7 +21,7 @@ A patch level metric separates neighboring cells belonging to the same class, an
 Landscape metrics are often applied to better understand a landscape structure around some sampling points.
 <!-- For example, ... .  -->
 In this post, I show how to prepare input data and how to calculate selected landscape metrics based on different buffer sizes and shapes.
-All calculations were performed in R, using [https://cran.r-project.org/web/packages/gdalUtils/index.html](**gdalUtils**), [https://github.com/r-spatial/sf](**sf**), and [https://github.com/rspatial/raster](**raster**) packages for spatial data handling, [https://github.com/tidyverse/purrr](**purrr**) to ease some calculations, and most importantly the [https://github.com/r-spatialecology/landscapemetrics](**landscapemetrics**) package was used to calculate landscape metrics.
+All calculations were performed in R, using [**gdalUtils**](https://cran.r-project.org/web/packages/gdalUtils/index.html), [**sf**](https://github.com/r-spatial/sf), and [**raster**](https://github.com/rspatial/raster) packages for spatial data handling, [**purrr**](https://github.com/tidyverse/purrr) to ease some calculations, and most importantly the [**landscapemetrics**]([https://github.com/r-spatialecology/landscapemetrics) package was used to calculate landscape metrics.
 
 # Data preparation
 
@@ -73,7 +73,7 @@ st_write(points, "data/sample_points.gpkg")
 ```
 
 ```{r, echo=FALSE, fig.cap="Location of three sample points on a land cover map of Australia. Source of the input map: https://maps.elie.ucl.ac.be/CCI/viewer/"}
-knitr::include_graphics("figs/01-map.png")
+knitr::include_graphics("figs/01-map-all.png")
 ```
 
 # Calculations of landscape metrics in a buffer
@@ -115,8 +115,8 @@ The structure of the output is stable and contains the following columns:
 7. `plot_id` - id of the input vector (point).
 8. `percentage_inside` - the size of the actual sampled landscape in %. It is not always 100% due to two reasons: (i) clipping raster cells using a buffer not directly intersecting a raster cell center lead to inaccuracies and (ii) sample plots can exceed the landscape boundary.
 
-```{r, echo=FALSE, out.width='30%', fig.cap="Square buffers with the side-length of 3000 meters around the three sample points."}
-knitr::include_graphics(c("figs/02-p1-map.png", "figs/03-p2-map.png", "figs/04-p3-map.png"))
+```{r, echo=FALSE, fig.cap="Square buffers with the side-length of 3000 meters around the three sample points."}
+knitr::include_graphics(c("figs/p1.png"))
 ```
 
 The `sample_lsm()` function also allows for selecting metrics using a level name (`"landscape"`, `"class"`, or `"patch"`), a metric abbreviation, full name of a metric, or a metric type. 
@@ -144,8 +144,8 @@ circle_shdi = sample_lsm(lc,
 circle_shdi
 ```
 
-```{r, echo=FALSE, out.width='30%', fig.cap="Circle buffers with the radius of 3000 meters around the three sample points."}
-knitr::include_graphics(c("figs/02-p1-map3.png", "figs/03-p2-map3.png", "figs/04-p3-map3.png"))
+```{r, echo=FALSE, fig.cap="Circle buffers with the radius of 3000 meters around the three sample points."}
+knitr::include_graphics(c("figs/p3.png"))
 ```
 
 # Calculations of landscape metrics for many buffers
@@ -166,8 +166,8 @@ two_sizes_output = sizes %>%
 
 It calculates all of the selected metrics for all of the buffers.
 
-```{r, echo=FALSE, out.width='30%', fig.cap="Square buffers with the side-length of 3000 and 6000 meters around the three sample points."}
-knitr::include_graphics(c("figs/02-p1-map2.png", "figs/03-p2-map2.png", "figs/04-p3-map2.png"))
+```{r, echo=FALSE, fig.cap="Square buffers with the side-length of 3000 and 6000 meters around the three sample points."}
+knitr::include_graphics(c("figs/p2.png"))
 ```
 
 The result is a data frame, where the first column describes the buffer size, and the rest is a standard **landscapemetrics** output.
