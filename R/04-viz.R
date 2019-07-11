@@ -25,29 +25,29 @@ p0 = tm_shape(lc) +
   tm_layout(legend.outside = TRUE)
 
 library(landscapemetrics)
-x1 = sample_lsm(lc, what = "lsm_p_area", points = sample_points[1, ],
+x1 = sample_lsm(lc, what = "lsm_p_area", y = sample_points[1, ],
                size = 10000, return_raster = TRUE)
-x1b = sample_lsm(lc, what = "lsm_p_area", points = sample_points[1, ],
+x1b = sample_lsm(lc, what = "lsm_p_area", y = sample_points[1, ],
                 size = 3000, return_raster = TRUE)
-x1c = sample_lsm(lc, what = "lsm_p_area", points = sample_points[1, ],
+x1c = sample_lsm(lc, what = "lsm_p_area", y = sample_points[1, ],
                  size = 6000, return_raster = TRUE)
-x1d = sample_lsm(lc, what = "lsm_p_area", points = sample_points[1, ],
+x1d = sample_lsm(lc, what = "lsm_p_area", y = sample_points[1, ],
                  size = 3000, return_raster = TRUE, shape = "circle")
-x2 = sample_lsm(lc, what = "lsm_p_area", points = sample_points[2, ],
+x2 = sample_lsm(lc, what = "lsm_p_area", y = sample_points[2, ],
                 size = 10000, return_raster = TRUE)
-x2b = sample_lsm(lc, what = "lsm_p_area", points = sample_points[2, ],
+x2b = sample_lsm(lc, what = "lsm_p_area", y = sample_points[2, ],
                 size = 3000, return_raster = TRUE)
-x2c = sample_lsm(lc, what = "lsm_p_area", points = sample_points[2, ],
+x2c = sample_lsm(lc, what = "lsm_p_area", y = sample_points[2, ],
                  size = 6000, return_raster = TRUE)
-x2d = sample_lsm(lc, what = "lsm_p_area", points = sample_points[2, ],
+x2d = sample_lsm(lc, what = "lsm_p_area", y = sample_points[2, ],
                  size = 3000, return_raster = TRUE, shape = "circle")
-x3 = sample_lsm(lc, what = "lsm_p_area", points = sample_points[3, ],
+x3 = sample_lsm(lc, what = "lsm_p_area", y = sample_points[3, ],
                 size = 10000, return_raster = TRUE)
-x3b = sample_lsm(lc, what = "lsm_p_area", points = sample_points[3, ],
+x3b = sample_lsm(lc, what = "lsm_p_area", y = sample_points[3, ],
                 size = 3000, return_raster = TRUE)
-x3c = sample_lsm(lc, what = "lsm_p_area", points = sample_points[3, ],
+x3c = sample_lsm(lc, what = "lsm_p_area", y = sample_points[3, ],
                  size = 6000, return_raster = TRUE)
-x3d = sample_lsm(lc, what = "lsm_p_area", points = sample_points[3, ],
+x3d = sample_lsm(lc, what = "lsm_p_area", y = sample_points[3, ],
                  size = 3000, return_raster = TRUE, shape = "circle")
 
 

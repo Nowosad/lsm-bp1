@@ -99,7 +99,7 @@ As a default, it calculates all of the available metrics in a square buffer, whe
 
 ```{r, warning=FALSE}
 square_all = sample_lsm(lc,
-                        points = sample_points,
+                        y = sample_points,
                         size = 3000)
 square_all
 ```
@@ -125,7 +125,7 @@ For example, SHDI (Shannon's diversity index) on a landscape level (`"lsm_l_shdi
 
 ```{r, warning=FALSE}
 square_shdi = sample_lsm(lc,
-                         points = sample_points,
+                         y = sample_points,
                          size = 3000,
                          what = "lsm_l_shdi") 
 square_shdi
@@ -138,7 +138,7 @@ In this case, the size argument represents the radius in map units.
 
 ```{r, warning=FALSE}
 circle_shdi = sample_lsm(lc,
-                         points = sample_points,
+                         y = sample_points,
                          size = 3000,
                          what = "lsm_l_shdi",
                          shape = "circle") 
@@ -161,7 +161,7 @@ sizes = c(3000, 6000)
 # calculating shdi (landscape metric) for each buffer
 two_sizes_output = sizes %>% 
   set_names() %>% 
-  map_dfr(~sample_lsm(lc, points = sample_points, what = "lsm_l_shdi", size = .), 
+  map_dfr(~sample_lsm(lc, y = sample_points, what = "lsm_l_shdi", size = .), 
           .id = "buffer")
 ```
 
